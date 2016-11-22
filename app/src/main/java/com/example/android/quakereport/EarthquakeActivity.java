@@ -15,22 +15,25 @@
  */
 package com.example.android.quakereport;
 
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity implements LoaderCallbacks<List<ListItemClass>>{
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+
+    public static final int EARTHQUAKE_LOADER_ID = 1;
 
     private static final String USGS_REQUEST_URL =
             "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=2&limit=100";
@@ -69,18 +72,58 @@ public class EarthquakeActivity extends AppCompatActivity {
             }
         });
 
-        new NetworkRequestAsyncTask().execute(USGS_REQUEST_URL);
+        android.app.LoaderManager loaderManager = getLoaderManager();
+
+        Log.v(LOG_TAG,"starting the initLoader .......");
+        loaderManager.initLoader(EARTHQUAKE_LOADER_ID,null,this);
+
+//        Log.v(LOG_TAG,"starting the asynctask .......");
+//        new NetworkRequestAsyncTask().execute(USGS_REQUEST_URL);
 
     }
 
+    @Override
+    public Loader<List<ListItemClass>> onCreateLoader(int id, Bundle args) {
+        Log.v(LOG_TAG,"strating the loader onCreate method .........");
+        return new EarthquakeLoader(this, USGS_REQUEST_URL);
+    }
 
-    private class NetworkRequestAsyncTask extends AsyncTask<String ,Void,List<ListItemClass>> {
+    @Override
+    public void onLoadFinished(Loader<List<ListItemClass>> loader, List<ListItemClass> listItemClasses) {
+
+        Log.v(LOG_TAG,"starting the loader onLoaderFinished method .........");
+
+        mAdapter.clear();
+        if (listItemClasses != null && !listItemClasses.isEmpty()) {
+            mAdapter.addAll(listItemClasses);
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<ListItemClass>> loader) {
+
+        Log.v(LOG_TAG,"starting the loader onLoaderReset method .........");
+
+
+        mAdapter.clear();
+    }
+
+
+   /*private class NetworkRequestAsyncTask extends AsyncTask<String ,Void,List<ListItemClass>> {
 
 
         @Override
         protected List<ListItemClass> doInBackground(String... url) {
 
+            Log.v(LOG_TAG,"strating the doinbackground method .........");
+
             List<ListItemClass> earthquakes = null;
+
+            if (url.length < 1 || url[0] == null) {
+                return null;
+            }
+
             try {
                 String responseStr =QueryUtils.makeHttpRequest(QueryUtils.createUrl(url[0]));
 
@@ -97,10 +140,13 @@ public class EarthquakeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<ListItemClass> listItemClasses) {
             super.onPostExecute(listItemClasses);
-
-            mAdapter.addAll(listItemClasses);
+            Log.v(LOG_TAG,"strating the onPostexecute method .........");
+            mAdapter.clear();
+            if (listItemClasses != null && !listItemClasses.isEmpty()) {
+                mAdapter.addAll(listItemClasses);
+            }
 
 
         }
-    }
+    }*/
 }

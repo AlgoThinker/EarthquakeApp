@@ -64,6 +64,7 @@ public final class QueryUtils {
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         try {
+            Log.v(LOG_TAG,"In httpConnection making process");
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(10000 /* milliseconds */);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
