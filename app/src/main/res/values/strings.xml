@@ -16,4 +16,5 @@
 <resources>
     <string name="app_name">Quake Report</string>
     <string name="NoOffsetString">Near the</string>
+    <string name="NoEarthquakesFound">No earthquakes were found</string>
 </resources>

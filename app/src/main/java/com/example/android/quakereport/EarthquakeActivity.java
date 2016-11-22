@@ -16,8 +16,11 @@
 package com.example.android.quakereport;
 
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +28,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +46,9 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
 
     ListItemAdapter mAdapter = null;
 
+    TextView emptyStateTextView ;
+
+    ProgressBar mProgressBar ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +56,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        mProgressBar = (ProgressBar)findViewById(R.id.progres_bar);
 
         // Create a new {@link ArrayAdapter} of earthquakes
         mAdapter = new ListItemAdapter(this , new ArrayList<ListItemClass>());
@@ -55,6 +64,22 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(mAdapter);
+
+        emptyStateTextView = (TextView) findViewById(R.id.empty_state);
+
+        //This method is provided by SDK and executes only when then is not item in listview(no results returned)
+
+        earthquakeListView.setEmptyView(emptyStateTextView);
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            initiateDataFetchTask();
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            emptyStateTextView.setText("No internet connection");
+        }
 
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -72,10 +97,16 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
             }
         });
 
+
+    }
+
+
+    private void initiateDataFetchTask() {
+
         android.app.LoaderManager loaderManager = getLoaderManager();
 
-        Log.v(LOG_TAG,"starting the initLoader .......");
-        loaderManager.initLoader(EARTHQUAKE_LOADER_ID,null,this);
+        Log.v(LOG_TAG, "starting the initLoader .......");
+        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
 
 //        Log.v(LOG_TAG,"starting the asynctask .......");
 //        new NetworkRequestAsyncTask().execute(USGS_REQUEST_URL);
@@ -97,6 +128,11 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
         if (listItemClasses != null && !listItemClasses.isEmpty()) {
             mAdapter.addAll(listItemClasses);
         }
+
+        emptyStateTextView.setText(R.string.NoEarthquakesFound);
+
+        mProgressBar.setVisibility(View.GONE);
+
 
     }
 
