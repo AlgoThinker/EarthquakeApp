@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2016 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,4 +16,9 @@
     <string name="app_name">Quake Report</string>
     <string name="NoOffsetString">Near the</string>
     <string name="NoEarthquakesFound">No earthquakes were found</string>
+    <string name="Settings_menu_item">Settings</string>
+    <string name="settings_title">Earthquake Settings</string>
+    <string name="settings_min_magnitude_label">Minimum Magnitude</string>
+    <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
+    <string name="settings_min_magnitude_default" translatable="false">6</string>
 </resources>
